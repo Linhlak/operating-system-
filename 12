@@ -1,0 +1,112 @@
+#include <iostream>
+#include <vector>
+#include <climits>
+
+void firstFit(const std::vector<int>& blockSize, const std::vector<int>& processSize) {
+    std::vector<int> allocation(processSize.size(), -1);
+    std::vector<int> blocks = blockSize;
+
+    for (size_t i = 0; i < processSize.size(); i++) {
+        for (size_t j = 0; j < blocks.size(); j++) {
+            if (blocks[j] >= processSize[i]) {
+                allocation[i] = j;
+                blocks[j] -= processSize[i];
+                break;
+            }
+        }
+    }
+
+    std::cout << "\nFirst-Fit Allocation:\nProcess No.\tProcess Size\tBlock No.\n";
+    for (size_t i = 0; i < processSize.size(); i++) {
+        std::cout << i + 1 << "\t\t" << processSize[i] << "\t\t";
+        if (allocation[i] != -1)
+            std::cout << allocation[i] + 1 << std::endl;
+        else
+            std::cout << "Not Allocated\n";
+    }
+}
+
+void bestFit(const std::vector<int>& blockSize, const std::vector<int>& processSize) {
+    std::vector<int> allocation(processSize.size(), -1);
+    std::vector<int> blocks = blockSize;
+
+    for (size_t i = 0; i < processSize.size(); i++) {
+        int bestIdx = -1;
+        int bestSize = INT_MAX;
+        for (size_t j = 0; j < blocks.size(); j++) {
+            if (blocks[j] >= processSize[i] && blocks[j] < bestSize) {
+                bestSize = blocks[j];
+                bestIdx = j;
+            }
+        }
+        if (bestIdx != -1) {
+            allocation[i] = bestIdx;
+            blocks[bestIdx] -= processSize[i];
+        }
+    }
+
+    std::cout << "\nBest-Fit Allocation:\nProcess No.\tProcess Size\tBlock No.\n";
+    for (size_t i = 0; i < processSize.size(); i++) {
+        std::cout << i + 1 << "\t\t" << processSize[i] << "\t\t";
+        if (allocation[i] != -1)
+            std::cout << allocation[i] + 1 << std::endl;
+        else
+            std::cout << "Not Allocated\n";
+    }
+}
+
+void worstFit(const std::vector<int>& blockSize, const std::vector<int>& processSize) {
+    std::vector<int> allocation(processSize.size(), -1);
+    std::vector<int> blocks = blockSize;
+
+    for (size_t i = 0; i < processSize.size(); i++) {
+        int worstIdx = -1;
+        int worstSize = -1;
+        for (size_t j = 0; j < blocks.size(); j++) {
+            if (blocks[j] >= processSize[i] && blocks[j] > worstSize) {
+                worstSize = blocks[j];
+                worstIdx = j;
+            }
+        }
+        if (worstIdx != -1) {
+            allocation[i] = worstIdx;
+            blocks[worstIdx] -= processSize[i];
+        }
+    }
+
+    std::cout << "\nWorst-Fit Allocation:\nProcess No.\tProcess Size\tBlock No.\n";
+    for (size_t i = 0; i < processSize.size(); i++) {
+        std::cout << i + 1 << "\t\t" << processSize[i] << "\t\t";
+        if (allocation[i] != -1)
+            std::cout << allocation[i] + 1 << std::endl;
+        else
+            std::cout << "Not Allocated\n";
+    }
+}
+
+int main() {
+    int n, m;
+    std::cout << "Enter number of memory blocks: ";
+    std::cin >> n;
+    std::vector<int> blockSize(n);
+
+    std::cout << "Enter size of each block:\n";
+    for (int i = 0; i < n; i++) {
+        std::cin >> blockSize[i];
+    }
+
+    std::cout << "Enter number of processes: ";
+    std::cin >> m;
+    std::vector<int> processSize(m);
+
+    std::cout << "Enter size of each process:\n";
+    for (int i = 0; i < m; i++) {
+        std::cin >> processSize[i];
+    }
+
+    firstFit(blockSize, processSize);
+    bestFit(blockSize, processSize);
+    worstFit(blockSize, processSize);
+
+    return 0;
+}
