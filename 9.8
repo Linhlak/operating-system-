@@ -1,0 +1,57 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+struct Process {
+    int pid;
+    int burst_time;
+    int waiting_time;
+    int turnaround_time;
+};
+
+bool compareBurstTime(const Process &a, const Process &b) {
+    return a.burst_time < b.burst_time;
+}
+
+int main() {
+    int n;
+    std::cout << "Enter number of processes: ";
+    std::cin >> n;
+
+    std::vector<Process> processes(n);
+
+    for (int i = 0; i < n; i++) {
+        processes[i].pid = i + 1;
+        std::cout << "Enter burst time for process " << processes[i].pid << ": ";
+        std::cin >> processes[i].burst_time;
+    }
+
+    // Sort processes based on burst time (SJF criteria)
+    std::sort(processes.begin(), processes.end(), compareBurstTime);
+
+    // Calculate waiting time
+    processes[0].waiting_time = 0;
+    for (int i = 1; i < n; i++) {
+        processes[i].waiting_time = processes[i - 1].waiting_time + processes[i - 1].burst_time;
+    }
+
+    // Calculate turnaround time
+    for (int i = 0; i < n; i++) {
+        processes[i].turnaround_time = processes[i].waiting_time + processes[i].burst_time;
+    }
+
+    // Display results
+    std::cout << "\nProcess\tBurst Time\tWaiting Time\tTurnaround Time\n";
+    int total_waiting = 0, total_turnaround = 0;
+    for (int i = 0; i < n; i++) {
+        std::cout << processes[i].pid << "\t\t" << processes[i].burst_time << "\t\t" 
+                  << processes[i].waiting_time << "\t\t" << processes[i].turnaround_time << std::endl;
+        total_waiting += processes[i].waiting_time;
+        total_turnaround += processes[i].turnaround_time;
+    }
+
+    std::cout << "\nAverage Waiting Time: " << (float)total_waiting / n << std::endl;
+    std::cout << "Average Turnaround Time: " << (float)total_turnaround / n << std::endl;
+
+    return 0;
+}
