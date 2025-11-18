@@ -1,0 +1,59 @@
+#include <iostream>
+#include <pthread.h>
+#include <vector>
+
+struct ThreadData {
+    const std::vector<int> *numbers;
+    int start;
+    int end;
+    long long partial_sum;
+};
+
+void* partialSum(void* arg) {
+    ThreadData* data = (ThreadData*)arg;
+    data->partial_sum = 0;
+    for (int i = data->start; i < data->end; ++i) {
+        data->partial_sum += (*(data->numbers))[i];
+    }
+    return nullptr;
+}
+
+int main() {
+    int n, num_threads;
+    std::cout << "Enter number of elements: ";
+    std::cin >> n;
+
+    std::vector<int> numbers(n);
+    std::cout << "Enter " << n << " numbers:\n";
+    for (int i = 0; i < n; ++i) {
+        std::cin >> numbers[i];
+    }
+
+    std::cout << "Enter number of threads: ";
+    std::cin >> num_threads;
+
+    if (num_threads > n) num_threads = n;
+
+    std::vector<pthread_t> threads(num_threads);
+    std::vector<ThreadData> thread_data(num_threads);
+
+    int chunk_size = n / num_threads;
+    int remainder = n % num_threads;
+
+    int start = 0;
+    for (int i = 0; i < num_threads; ++i) {
+        int end = start + chunk_size + (i < remainder ? 1 : 0);
+        thread_data[i] = {&numbers, start, end, 0};
+        pthread_create(&threads[i], nullptr, partialSum, &thread_data[i]);
+        start = end;
+    }
+
+    long long total_sum = 0;
+    for (int i = 0; i < num_threads; ++i) {
+        pthread_join(threads[i], nullptr);
+        total_sum += thread_data[i].partial_sum;
+    }
+
+    std::cout << "Sum of numbers: " << total_sum << std::endl;
+    return 0;
+}
