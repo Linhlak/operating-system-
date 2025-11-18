@@ -1,0 +1,30 @@
+i. Process Control Commands
+fork: This is a system call in programming (not a direct shell command) used in C/C++ to create a new process by duplicating the current process.
+
+getpid: System call that returns the Process ID (PID) of the current process.
+
+ps: Displays information about active processes. Example: ps aux shows all running processes.
+
+kill: Sends a signal to terminate or control a process. Example: kill 1234 sends a termination signal to the process with PID 1234.
+
+sleep: Delays execution for a specified number of seconds. Example: sleep 5 pauses for 5 seconds.
+
+ii. Communication Commands: Input-Output Redirection and Pipe
+Input-output redirection uses symbols to redirect input or output:
+
+> redirects output to a file (overwrites).
+
+>> appends output to a file.
+
+< redirects input from a file.
+Example: ls > filelist.txt saves directory list to a file.
+
+Pipes (|) connect the output of one command to the input of another.
+Example: ps aux | grep bash filters processes involving "bash".
+
+iii. Protection Management Commands
+chmod: Changes file or directory permissions. Example: chmod 755 file sets read/write/execute for owner, read/execute for group and others.
+
+chown: Changes file owner. Example: chown user file
+
+chgrp: Changes group ownership of a file. Example: chgrp groupname file
