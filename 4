@@ -1,0 +1,74 @@
+i. Parent and Child execute same program, same code
+cpp
+#include <iostream>
+#include <unistd.h>
+
+int main() {
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        std::cerr << "fork failed\n";
+        return 1;
+    } else if (pid == 0) {
+        // Child process
+        std::cout << "Child process, pid = " << getpid() << std::endl;
+    } else {
+        // Parent process
+        std::cout << "Parent process, pid = " << getpid() << std::endl;
+    }
+
+    return 0;
+}
+ii. Parent and Child execute same program, different code (using exec)
+cpp
+#include <iostream>
+#include <unistd.h>
+
+int main() {
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        std::cerr << "fork failed\n";
+        return 1;
+    } else if (pid == 0) {
+        // Child replaces its code with `ls -l` command (different program)
+        char* args[] = {(char*)"ls", (char*)"-l", nullptr};
+        execvp("ls", args);
+        // execvp returns only if error occurs
+        std::cerr << "exec failed\n";
+    } else {
+        // Parent process continues
+        std::cout << "Parent process, pid = " << getpid() << std::endl;
+    }
+
+    return 0;
+}
+iii. Parent waits for child to finish before terminating
+cpp
+#include <iostream>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main() {
+    pid_t pid = fork();
+
+    if (pid < 0) {
+        std::cerr << "fork failed\n";
+        return 1;
+    } else if (pid == 0) {
+        // Child process
+        std::cout << "Child running, pid = " << getpid() << std::endl;
+        sleep(2);  // Simulate work
+        std::cout << "Child done\n";
+    } else {
+        // Parent waits for child to finish
+        wait(nullptr);
+        std::cout << "Parent running after child finished, pid = " << getpid() << std::endl;
+    }
+    return 0;
+}
+Use g++ to compile each:
+
+text
+g++ -o prog prog.cpp
+./prog
