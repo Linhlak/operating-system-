@@ -1,0 +1,35 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+int main() {
+    std::ifstream meminfo("/proc/meminfo");
+    if (!meminfo) {
+        std::cerr << "Failed to open /proc/meminfo" << std::endl;
+        return 1;
+    }
+
+    std::string line;
+    long totalMem = 0, freeMem = 0, availableMem = 0;
+
+    while (std::getline(meminfo, line)) {
+        if (line.find("MemTotal:") == 0) {
+            sscanf(line.c_str(), "MemTotal: %ld kB", &totalMem);
+        } else if (line.find("MemFree:") == 0) {
+            sscanf(line.c_str(), "MemFree: %ld kB", &freeMem);
+        } else if (line.find("MemAvailable:") == 0) {
+            sscanf(line.c_str(), "MemAvailable: %ld kB", &availableMem);
+        }
+    }
+    meminfo.close();
+
+    long usedMem = totalMem - freeMem;
+
+    std::cout << "Memory Information (in kB):\n";
+    std::cout << "Total Memory: " << totalMem << " kB\n";
+    std::cout << "Free Memory: " << freeMem << " kB\n";
+    std::cout << "Available Memory: " << availableMem << " kB\n";
+    std::cout << "Used Memory (Total - Free): " << usedMem << " kB\n";
+
+    return 0;
+}
